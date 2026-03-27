@@ -1,0 +1,69 @@
+Switch>en
+Switch#
+Switch#configure terminal
+Switch(config)#
+Switch(config)#hostname SW1
+SW1(config)#
+
+SW1(config)#vlan 10			#create VLAN 10 20 30 
+SW1(config-vlan)#name PC
+SW1(config-vlan)#ex
+
+SW1(config)#vlan 20
+SW1(config-vlan)#name LAPTOP
+SW1(config-vlan)#ex
+
+SW1(config)#vlan 30 
+SW1(config-vlan)#name PHONE
+SW1(config-vlan)#ex
+
+SW1(config)#interface range gigabitEthernet 1/0/2-3	#port assigned in VLAN 10 20 30(you can assign your port(switch to pc)) 
+SW1(config-if-range)#switchport mode access
+SW1(config-if-range)#switchport access vlan 10
+
+SW1(config)#interface range gigabitEthernet 1/0/4-5
+SW1(config-if-range)#switchport mode access
+SW1(config-if-range)#switchport access vlan 20
+
+SW1(config)#interface range gigabitEthernet 1/0/6-7
+SW1(config-if-range)#switchport mode access
+SW1(config-if-range)#switchport access vlan 30
+
+SW1(config)#interface vlan 10				#To create VLAN 10 20 30 gateway's 
+SW1(config-if)#ip address 10.10.10.1 255.255.255.0
+SW1(config-if)#no shutdown
+
+SW1(config)#interface vlan 20
+SW1(config-if)#ip address 20.20.20.1 255.255.255.0
+SW1(config-if)#no shutdown
+
+SW1(config)#interface vlan 30
+SW1(config-if)#ip address 30.30.30.1 255.255.255.0
+SW1(config-if)#no shutdown
+
+SW1(config)#ip dhcp pool vlan10				#to create DHCP configuration in VLAN 10 20 30
+SW1(dhcp-config)#network 10.10.10.0 255.255.255.0
+SW1(dhcp-config)#default-router 10.10.10.1 
+SW1(dhcp-config)#dns-server 8.8.8.8
+
+SW1(config)#ip dhcp pool vlan20
+SW1(dhcp-config)#network 20.20.20.0 255.255.255.0
+SW1(dhcp-config)#default-router 20.20.20.1 
+SW1(dhcp-config)#dns-server 8.8.8.8
+
+SW1(config)#ip dhcp pool vlan30
+SW1(dhcp-config)#network 30.30.30.0 255.255.255.0
+SW1(dhcp-config)#default-router 30.30.30.1
+SW1(dhcp-config)#dns-server 8.8.8.8
+
+enable DHCP mode in your connected PC💻(in real life windows+R > type ncpa.cpl > click adapter then its priority > click ipv4 option and enable automatically assign and DNS)
+
+
+SW1(config)#interface gigabitEthernet 1/0/24		#to create ip address in switch port connected to Router network
+SW1(config-if)#no switchport
+SW1(config-if)#ip address 128.16.0.2 255.255.0.0
+SW1(config-if)#no shutdown
+
+SW1(config)#ip routing					#connect to default routing to router and switch
+SW1(config)#ip route 0.0.0.0 0.0.0.0 128.16.0.1		
+

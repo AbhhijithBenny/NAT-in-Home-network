@@ -1,0 +1,37 @@
+Router>enable
+Router#configure terminal
+Router(config)#
+Router(config)#hostname R1
+R1(config)#
+R1(config)#interface gigabitEthernet 0/0  	#outside port in Router(connected to ISP port)
+R1(config-if)#ip address dhcp
+R1(config-if)#no shutdown		  	#automatically assigned ip address
+					  	 (cannot assigning you can manually enable ip address on the network)
+
+R1(config)#interface gigabitEthernet 0/1 	 #inside port in Router(switch to router)
+R1(config-if)#ip address 128.16.0.1 255.255.0.0
+R1(config-if)#no shutdown 
+
+Connect to ISP to R1 in default routing
+
+R1(config)#ip route 0.0.0.0 0.0.0.0 192.168.1.1
+
+R1(config)#ip name-server 8.8.8.8 
+
+R1(config)#ip access-list standard 11			#create the standard ACL and permit for lan network and VLAN network 
+R1(config-std-nacl)#permit 128.16.0.0 0.0.255.255
+R1(config-std-nacl)#permit 10.10.10.0 0.0.0.255
+R1(config-std-nacl)#permit 20.20.20.0 0.0.0.255
+R1(config-std-nacl)#permit 30.30.30.0 0.0.0.255
+
+R1(config)#ip nat inside source list 11 interface gigabitEthernet 0/0 overload   #create NAT(PAT) 11 is the ACL number and 											  gigabitEthernet 0/0is the outside port
+
+R1(config)#interface gigabitEthernet 0/0		#NAT applying for the interfaces 
+R1(config-if)#ip nat outside 
+
+R1(config-if)#interface gigabitEthernet 0/1
+R1(config-if)#ip nat inside
+
+R1(config)#ip route 10.10.10.0 255.255.255.0 128.16.0.2		#to configure static routing in VLAN network
+R1(config)#ip route 20.20.20.0 255.255.255.0 128.16.0.2
+R1(config)#ip route 30.30.30.0 255.255.255.0 128.16.0.2
